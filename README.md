@@ -64,10 +64,11 @@ This project is licensed under the [MIT License](LICENSE).
 
 ---
 
-# Hi, I'm Emmanuel Naweji
+## Hi, I'm Emmanuel Naweji
 
-**Cloud | DevOps | SRE | FinOps | AI Engineering**  
-Helping businesses modernize infrastructure and guiding engineers into top 1% career paths through real-world projects and automation-first thinking.
+**Cloud | DevOps | SRE | FinOps | AI Engineer**  
+
+I help businesses modernize and secure their infrastructure while mentoring engineers to reach top 1% career paths. My approach is rooted in real-world projects, automation-first strategies, and a deep commitment to excellence in everything from architecture to execution.
 
 ![AWS Certified](https://img.shields.io/badge/AWS-Certified-blue?logo=amazonaws)
 ![Azure Solutions Architect](https://img.shields.io/badge/Azure-Solutions%20Architect-0078D4?logo=microsoftazure)
