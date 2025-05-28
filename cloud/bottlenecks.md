@@ -1,6 +1,6 @@
 # Cloud Bottlenecks
 
-### Helpful Docs: [AWS Docs](https://docs.aws.amazon.com/) | [GCP Docs](https://cloud.google.com/docs)
+### Helpful Docs: [AWS Docs](https://docs.aws.amazon.com/) | [Azure Docs](https://docs.azure.cn/en-us/?product=popular) | [GCP Docs](https://cloud.google.com/docs)
 
 ## Table of Contents
 - [1. Misconfigured IAM Policies](#misconfigured-iam-policies)
