@@ -35,21 +35,7 @@ Whether you’re a solo SRE or part of a platform team, this toolkit will give y
 
 ## Repository Structure
 
-```
-DevOps-Troubleshooting-Toolkit/
-├── cloud/
-├── containers/
-├── databases/
-├── kubernetes/
-├── terraform/
-├── linux/
-├── observability/
-├── scripts/
-├─README.md
-├── CONTRIBUTING.md
-├── CODE_OF_CONDUCT.md
-└── LICENSE
-```
+![Repository Structure](repo-structure.png)
 
 ---
 
