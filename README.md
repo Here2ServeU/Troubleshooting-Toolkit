@@ -45,8 +45,7 @@ DevOps-Troubleshooting-Toolkit/
 ├── linux/
 ├── observability/
 ├── scripts/
-├── .github/workflows/
-├── README.md
+├─README.md
 ├── CONTRIBUTING.md
 ├── CODE_OF_CONDUCT.md
 └── LICENSE
