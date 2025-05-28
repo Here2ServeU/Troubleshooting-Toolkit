@@ -54,6 +54,19 @@ DevOps-Troubleshooting-Toolkit/
 
 ---
 
+## Continuous Integration
+
+[![Toolkit CI](https://github.com/your-username/DevOps-Troubleshooting-Toolkit/actions/workflows/toolkit-ci.yml/badge.svg)](https://github.com/your-username/DevOps-Troubleshooting-Toolkit/actions/workflows/toolkit-ci.yml)
+
+This project includes a GitHub Actions workflow that automatically:
+- Validates all Markdown files for formatting issues
+- Lints shell scripts in the `/scripts` directory using ShellCheck
+- Verifies the presence of required project directories and files
+
+These checks help ensure the toolkit remains consistent, clean, and production-ready with every update.
+
+---
+
 ## Contribute
 
 We welcome contributions! Fix gaps, add use cases, or contribute scripts. Read [CONTRIBUTING.md](CONTRIBUTING.md) to get started.
