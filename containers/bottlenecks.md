@@ -1,325 +1,147 @@
 # Containers Bottlenecks
 
-### Helpful Docs: [Docker Docs](https://docs.docker.com/) | [Podman Docs](https://podman.io/)
+### Helpful Docs: [Docker Docs](https://docs.docker.com/) | [Podman Docs](https://docs.podman.io/) | [Azure Container Instances](https://learn.microsoft.com/en-us/azure/container-instances/)
 
 ## Table of Contents
-- [1. High Container Startup Time](#high-container-startup-time)
-- [2. Image Pull Failures](#image-pull-failures)
-- [3. Large Container Image Sizes](#large-container-image-sizes)
-- [4. Improper Resource Requests and Limits](#improper-resource-requests-and-limits)
-- [5. Container Restarts due to OOM](#container-restarts-due-to-oom)
-- [6. Log Bloat Inside Containers](#log-bloat-inside-containers)
-- [7. Container Time Drift](#container-time-drift)
-- [8. Privileged Containers Running in Prod](#privileged-containers-running-in-prod)
-- [9. Poorly Defined Health Checks](#poorly-defined-health-checks)
-- [10. Unscanned Container Images](#unscanned-container-images)
-- [11. Improper Volume Mounting](#improper-volume-mounting)
-- [12. Insecure Secrets Management](#insecure-secrets-management)
-- [13. Inconsistent Base Images](#inconsistent-base-images)
-- [14. Lack of Immutable Image Tags](#lack-of-immutable-image-tags)
-- [15. Docker Daemon Overload](#docker-daemon-overload)
-- [16. Too Many Layers in Dockerfiles](#too-many-layers-in-dockerfiles)
-- [17. Network Conflicts Across Containers](#network-conflicts-across-containers)
-- [18. Missing Environment Variables](#missing-environment-variables)
-- [19. Stale PID Files](#stale-pid-files)
-- [20. Unclean Exit Traps](#unclean-exit-traps)
 
-## High Container Startup Time
+* [1. High Container Startup Time](#1-high-container-startup-time)
+* [2. Image Pull Failures](#2-image-pull-failures)
+* [3. Large Container Image Sizes](#3-large-container-image-sizes)
+* [4. Improper Resource Requests and Limits](#4-improper-resource-requests-and-limits)
+* [5. Container Restarts due to OOM](#5-container-restarts-due-to-oom)
+* [6. Log Bloat Inside Containers](#6-log-bloat-inside-containers)
+* [7. Container Time Drift](#7-container-time-drift)
+* [8. Privileged Containers Running in Prod](#8-privileged-containers-running-in-prod)
+* [9. Poorly Defined Health Checks](#9-poorly-defined-health-checks)
+* [10. Unscanned Container Images](#10-unscanned-container-images)
+* [11. Improper Volume Mounting](#11-improper-volume-mounting)
+* [12. Insecure Secrets Management](#12-insecure-secrets-management)
+* [13. Inconsistent Base Images](#13-inconsistent-base-images)
+* [14. Lack of Immutable Image Tags](#14-lack-of-immutable-image-tags)
+* [15. Docker Daemon Overload](#15-docker-daemon-overload)
+* [16. Too Many Layers in Dockerfiles](#16-too-many-layers-in-dockerfiles)
+* [17. Network Conflicts Across Containers](#17-network-conflicts-across-containers)
+* [18. Missing Environment Variables](#18-missing-environment-variables)
+* [19. Stale PID Files](#19-stale-pid-files)
+* [20. Unclean Exit Traps](#20-unclean-exit-traps)
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 1. High Container Startup Time
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:** Containers take a long time to initialize.
+**Root Cause:** Large images, excessive init processes, or high resource contention.
+**Fix:** Use slim base images (e.g., Alpine), simplify entrypoints, analyze logs with `docker logs` or `az container logs`.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+## 2. Image Pull Failures
 
+**Symptoms:** Pods stuck in `ImagePullBackOff` or `ErrImagePull`.
+**Root Cause:** Incorrect image name, registry permissions, or network issues.
+**Fix:** Verify registry access, check ACR permissions, test `docker pull` manually.
 
-## Image Pull Failures
+## 3. Large Container Image Sizes
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+**Symptoms:** High disk usage and long build times.
+**Root Cause:** Unoptimized Dockerfiles with unused packages.
+**Fix:** Use `.dockerignore`, multi-stage builds, and tools like Dive.
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+## 4. Improper Resource Requests and Limits
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Symptoms:** OOM kills, CPU throttling.
+**Root Cause:** Misconfigured resource constraints.
+**Fix:** Set appropriate `--memory` and `--cpus` flags or define in YAML specs.
 
+## 5. Container Restarts due to OOM
 
-## Large Container Image Sizes
+**Symptoms:** Frequent container crashes.
+**Root Cause:** Memory usage exceeds allocated limit.
+**Fix:** Analyze `docker inspect`, adjust memory limits, optimize app usage.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 6. Log Bloat Inside Containers
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:** Disk space exhaustion.
+**Root Cause:** Excessive logging without rotation.
+**Fix:** Use log drivers (`json-file`, `none`), mount log volumes, rotate logs.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+## 7. Container Time Drift
 
+**Symptoms:** Timestamp mismatch in logs.
+**Root Cause:** Host/container time desynchronization.
+**Fix:** Ensure NTP on host, mount `/etc/timezone`, use `TZ` env variable.
 
-## Improper Resource Requests and Limits
+## 8. Privileged Containers Running in Prod
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+**Symptoms:** Elevated security risk.
+**Root Cause:** Containers running with `--privileged` or high capabilities.
+**Fix:** Avoid `--privileged`, drop Linux capabilities, scan with Trivy.
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+## 9. Poorly Defined Health Checks
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Symptoms:** Containers marked healthy but unresponsive.
+**Root Cause:** Missing or misconfigured health checks.
+**Fix:** Add `HEALTHCHECK` in Dockerfile or YAML specs with meaningful probes.
 
+## 10. Unscanned Container Images
 
-## Container Restarts due to OOM
+**Symptoms:** Vulnerabilities in runtime.
+**Root Cause:** Lack of image scanning in CI/CD.
+**Fix:** Use tools like Trivy, Clair, or Azure Defender for Containers.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 11. Improper Volume Mounting
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:** Data not persisting or inaccessible.
+**Root Cause:** Incorrect bind or volume mount paths.
+**Fix:** Check `-v` flags or `mountPath`, validate with `docker inspect`.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+## 12. Insecure Secrets Management
 
+**Symptoms:** Secrets visible in container env or logs.
+**Root Cause:** Hardcoded or unencrypted secrets.
+**Fix:** Use Docker secrets, Azure Key Vault, or Kubernetes secrets.
 
-## Log Bloat Inside Containers
+## 13. Inconsistent Base Images
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+**Symptoms:** App behavior differs across environments.
+**Root Cause:** Unpinned or mixed base images.
+**Fix:** Use consistent pinned base images, scan dependencies.
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+## 14. Lack of Immutable Image Tags
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Symptoms:** Drift in environments despite same tag.
+**Root Cause:** Retagging images (e.g., `latest`).
+**Fix:** Use SHA digests or versioned tags, enforce via policies.
 
+## 15. Docker Daemon Overload
 
-## Container Time Drift
+**Symptoms:** Slow container response or commands hang.
+**Root Cause:** Too many containers/images or daemon config issues.
+**Fix:** Prune unused images, restart Docker, inspect daemon logs.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 16. Too Many Layers in Dockerfiles
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:** Build slowness or caching issues.
+**Root Cause:** Excessive `RUN`, `COPY`, and `ADD` layers.
+**Fix:** Combine commands, use minimal steps, leverage `&&`.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+## 17. Network Conflicts Across Containers
 
+**Symptoms:** Connectivity issues or port clashes.
+**Root Cause:** Same host port, overlapping bridge networks.
+**Fix:** Use user-defined networks, assign unique ports.
 
-## Privileged Containers Running in Prod
+## 18. Missing Environment Variables
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+**Symptoms:** Crashes or undefined behaviors.
+**Root Cause:** Required env vars not passed.
+**Fix:** Use `.env` files, `--env` flag, or secret injection.
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+## 19. Stale PID Files
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Symptoms:** Services fail to start.
+**Root Cause:** PID file left from previous session.
+**Fix:** Add cleanup scripts in entrypoint, or `rm /tmp/app.pid`.
 
+## 20. Unclean Exit Traps
 
-## Poorly Defined Health Checks
-
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
-
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
-
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
-
-
-## Unscanned Container Images
-
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
-
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
-
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
-
-
-## Improper Volume Mounting
-
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
-
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
-
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
-
-
-## Insecure Secrets Management
-
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
-
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
-
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
-
-
-## Inconsistent Base Images
-
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
-
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
-
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
-
-
-## Lack of Immutable Image Tags
-
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
-
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
-
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
-
-
-## Docker Daemon Overload
-
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
-
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
-
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
-
-
-## Too Many Layers in Dockerfiles
-
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
-
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
-
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
-
-
-## Network Conflicts Across Containers
-
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
-
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
-
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
-
-
-## Missing Environment Variables
-
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
-
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
-
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
-
-
-## Stale PID Files
-
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
-
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
-
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
-
-
-## Unclean Exit Traps
-
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
-
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
-
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Symptoms:** Orphaned resources, zombie processes.
+**Root Cause:** Missing `trap` or signal handling.
+**Fix:** Use `trap` in shell entrypoints or graceful shutdown handlers.
 

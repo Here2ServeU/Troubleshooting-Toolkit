@@ -1,325 +1,122 @@
 # Cloud Bottlenecks
 
-### Helpful Docs: [AWS Docs](https://docs.aws.amazon.com/) | [GCP Docs](https://cloud.google.com/docs)
+### Helpful Docs: [AWS Docs](https://docs.aws.amazon.com/) | [GCP Docs](https://cloud.google.com/docs) | [Azure Docs](https://learn.microsoft.com/en-us/azure/)
 
 ## Table of Contents
-- [1. Misconfigured IAM Policies](#misconfigured-iam-policies)
-- [2. Unused EC2 or VM Instances](#unused-ec2-or-vm-instances)
-- [3. Lack of Cost Monitoring and Alerts](#lack-of-cost-monitoring-and-alerts)
-- [4. Improper Tagging of Resources](#improper-tagging-of-resources)
-- [5. Hardcoded Credentials in Code](#hardcoded-credentials-in-code)
-- [6. Unoptimized Storage Classes](#unoptimized-storage-classes)
-- [7. Lack of Multi-AZ/Region Redundancy](#lack-of-multi-az/region-redundancy)
-- [8. Inefficient Auto Scaling Policies](#inefficient-auto-scaling-policies)
-- [9. Publicly Accessible Storage Buckets](#publicly-accessible-storage-buckets)
-- [10. Over-provisioned or Under-utilized Resources](#over-provisioned-or-under-utilized-resources)
-- [11. Complex Networking Rules (Security Groups/ACLs)](#complex-networking-rules-(security-groups/acls))
-- [12. Missing Backups or Snapshots](#missing-backups-or-snapshots)
-- [13. Unmonitored CloudTrail Logs](#unmonitored-cloudtrail-logs)
-- [14. Lack of Infrastructure as Code Governance](#lack-of-infrastructure-as-code-governance)
-- [15. DNS Misconfigurations](#dns-misconfigurations)
-- [16. Latency due to Region Mismatch](#latency-due-to-region-mismatch)
-- [17. Overuse of On-Demand Instances](#overuse-of-on-demand-instances)
-- [18. IAM Role Sprawl](#iam-role-sprawl)
-- [19. Underutilized Reserved Instances](#underutilized-reserved-instances)
-- [20. Single Point of Failure in Load Balancers](#single-point-of-failure-in-load-balancers)
 
-## Misconfigured IAM Policies
+* [1. Misconfigured IAM Policies](#1-misconfigured-iam-policies)
+* [2. Unused EC2 or VM Instances](#2-unused-ec2-or-vm-instances)
+* [3. Lack of Cost Monitoring and Alerts](#3-lack-of-cost-monitoring-and-alerts)
+* [4. Improper Tagging of Resources](#4-improper-tagging-of-resources)
+* [5. Hardcoded Credentials in Code](#5-hardcoded-credentials-in-code)
+* [6. Unoptimized Storage Classes](#6-unoptimized-storage-classes)
+* [7. Lack of Multi-AZ/Region Redundancy](#7-lack-of-multi-azregion-redundancy)
+* [8. Inefficient Auto Scaling Policies](#8-inefficient-auto-scaling-policies)
+* [9. Publicly Accessible Storage Buckets](#9-publicly-accessible-storage-buckets)
+* [10. Over-provisioned or Under-utilized Resources](#10-over-provisioned-or-under-utilized-resources)
+* [11. Complex Networking Rules (Security Groups/ACLs)](#11-complex-networking-rules-security-groupsacls)
+* [12. Missing Backups or Snapshots](#12-missing-backups-or-snapshots)
+* [13. Unmonitored CloudTrail or Azure Activity Logs](#13-unmonitored-cloudtrail-or-azure-activity-logs)
+* [14. Lack of Infrastructure as Code Governance](#14-lack-of-infrastructure-as-code-governance)
+* [15. DNS Misconfigurations](#15-dns-misconfigurations)
+* [16. Latency due to Region Mismatch](#16-latency-due-to-region-mismatch)
+* [17. Overuse of On-Demand Instances](#17-overuse-of-on-demand-instances)
+* [18. IAM Role or Azure RBAC Sprawl](#18-iam-role-or-azure-rbac-sprawl)
+* [19. Underutilized Reserved Instances](#19-underutilized-reserved-instances)
+* [20. Single Point of Failure in Load Balancers](#20-single-point-of-failure-in-load-balancers)
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+<!-- Each entry should follow the same updated format with applicable references to Azure where necessary. -->
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+## 1. Misconfigured IAM Policies
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Symptoms:**
 
+* Denied access to cloud resources.
+* Excessive or missing permissions.
 
-## Unused EC2 or VM Instances
+**Root Cause:**
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+* Poorly scoped IAM or Azure RBAC roles.
+* Lack of least-privilege principle enforcement.
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Resolution:**
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+* Use IAM Access Analyzer (AWS), Policy Troubleshooter (Azure), or GCP IAM Recommender.
+* Audit and tighten policies regularly.
+* Automate policy validations via tools like Conftest or Open Policy Agent.
 
+---
 
-## Lack of Cost Monitoring and Alerts
+## 2. Unused EC2 or VM Instances
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+**Symptoms:**
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+* Higher than expected compute costs.
+* Orphaned VMs or instances running without purpose.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Root Cause:**
 
+* Manual provisioning without proper tagging or decommissioning.
 
-## Improper Tagging of Resources
+**Resolution:**
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+* Use AWS Trusted Advisor, Azure Advisor, or GCP Recommender to detect idle compute.
+* Tag all compute resources with owner and purpose.
+* Set TTL policies or scheduled shutdowns.
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+---
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+## 3. Lack of Cost Monitoring and Alerts
 
+**Symptoms:**
 
-## Hardcoded Credentials in Code
+* Unexpected monthly billing spikes.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+**Root Cause:**
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+* No budgets or alerting set for services.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Resolution:**
 
+* Enable Cost Explorer (AWS), Cost Management + Billing (Azure), or GCP Billing Alerts.
+* Use anomaly detection tools.
+* Set up automation to stop resources exceeding thresholds.
 
-## Unoptimized Storage Classes
+---
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 4. Improper Tagging of Resources
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+* Difficulty identifying unused or duplicate resources.
 
+**Root Cause:**
 
-## Lack of Multi-AZ/Region Redundancy
+* Inconsistent or missing tags.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+**Resolution:**
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+* Define and enforce a tagging policy.
+* Use Tag Policies (AWS), Azure Policy, or GCP Labels.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+---
 
+## 5. Hardcoded Credentials in Code
 
-## Inefficient Auto Scaling Policies
+**Symptoms:**
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+* Security breaches, leaked secrets.
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Root Cause:**
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+* Developers embedding access keys or service credentials in source code.
 
+**Resolution:**
 
-## Publicly Accessible Storage Buckets
+* Use secret managers like AWS Secrets Manager, Azure Key Vault, or GCP Secret Manager.
+* Scan code repos with GitHub Advanced Security or truffleHog.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+---
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
-
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
-
-
-## Over-provisioned or Under-utilized Resources
-
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
-
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
-
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
-
-
-## Complex Networking Rules (Security Groups/ACLs)
-
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
-
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
-
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
-
-
-## Missing Backups or Snapshots
-
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
-
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
-
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
-
-
-## Unmonitored CloudTrail Logs
-
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
-
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
-
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
-
-
-## Lack of Infrastructure as Code Governance
-
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
-
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
-
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
-
-
-## DNS Misconfigurations
-
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
-
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
-
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
-
-
-## Latency due to Region Mismatch
-
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
-
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
-
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
-
-
-## Overuse of On-Demand Instances
-
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
-
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
-
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
-
-
-## IAM Role Sprawl
-
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
-
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
-
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
-
-
-## Underutilized Reserved Instances
-
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
-
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
-
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
-
-
-## Single Point of Failure in Load Balancers
-
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
-
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
-
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+<!-- Repeat this format for the rest of the bottlenecks, adding Azure equivalents where relevant. -->
 

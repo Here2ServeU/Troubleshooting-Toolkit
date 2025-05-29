@@ -3,323 +3,293 @@
 ### Helpful Docs: [Linux Command Guide](https://linuxcommand.org/)
 
 ## Table of Contents
-- [1. High CPU Load Average](#high-cpu-load-average)
-- [2. Memory Swapping](#memory-swapping)
-- [3. Zombie Processes](#zombie-processes)
-- [4. Stale NFS Mounts](#stale-nfs-mounts)
-- [5. Disk Space Exhaustion](#disk-space-exhaustion)
-- [6. Incorrect File Permissions](#incorrect-file-permissions)
-- [7. Full /tmp or /var Directories](#full-/tmp-or-/var-directories)
-- [8. Slow Boot Due to Failed Services](#slow-boot-due-to-failed-services)
-- [9. Outdated Packages](#outdated-packages)
-- [10. Time Sync Issues (NTP)](#time-sync-issues-(ntp))
-- [11. Misconfigured Ulimits](#misconfigured-ulimits)
-- [12. High I/O Wait Times](#high-i/o-wait-times)
-- [13. Network Interface Flapping](#network-interface-flapping)
-- [14. Syslog Flooding](#syslog-flooding)
-- [15. Corrupted Filesystems](#corrupted-filesystems)
-- [16. Untracked Cron Jobs](#untracked-cron-jobs)
-- [17. SELinux Denials](#selinux-denials)
-- [18. SSH Authentication Failures](#ssh-authentication-failures)
-- [19. Hanging User Sessions](#hanging-user-sessions)
-- [20. Kernel Panics or OOM Kill](#kernel-panics-or-oom-kill)
 
-## High CPU Load Average
+* [1. High CPU Load Average](#high-cpu-load-average)
+* [2. Memory Swapping](#memory-swapping)
+* [3. Zombie Processes](#zombie-processes)
+* [4. Stale NFS Mounts](#stale-nfs-mounts)
+* [5. Disk Space Exhaustion](#disk-space-exhaustion)
+* [6. Incorrect File Permissions](#incorrect-file-permissions)
+* [7. Full /tmp or /var Directories](#full-tmp-or-var-directories)
+* [8. Slow Boot Due to Failed Services](#slow-boot-due-to-failed-services)
+* [9. Outdated Packages](#outdated-packages)
+* [10. Time Sync Issues (NTP)](#time-sync-issues-ntp)
+* [11. Misconfigured Ulimits](#misconfigured-ulimits)
+* [12. High I/O Wait Times](#high-io-wait-times)
+* [13. Network Interface Flapping](#network-interface-flapping)
+* [14. Syslog Flooding](#syslog-flooding)
+* [15. Corrupted Filesystems](#corrupted-filesystems)
+* [16. Untracked Cron Jobs](#untracked-cron-jobs)
+* [17. SELinux Denials](#selinux-denials)
+* [18. SSH Authentication Failures](#ssh-authentication-failures)
+* [19. Hanging User Sessions](#hanging-user-sessions)
+* [20. Kernel Panics or OOM Kill](#kernel-panics-or-oom-kill)
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+> Each bottleneck entry includes:
+>
+> * A description of the issue and its symptoms
+> * Common root causes
+> *️ ecommended tools and commands
+> * Optional scripts or automation tips
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+---
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+## 1. High CPU Load Average
 
+**Symptoms:** Elevated load average visible in `uptime`, `top`, or `htop`. Application response time slows down.
 
-## Memory Swapping
+**Cause:** Background processes, misconfigured services, or infinite loops.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+**Fix:**
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+* Use `top`, `htop`, or `pidstat` to identify CPU-heavy processes.
+* Restart the offending process or service.
+* Consider renicing or cgroup limitations.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+---
 
+## 2. Memory Swapping
 
-## Zombie Processes
+**Symptoms:** System sluggishness, excessive swap usage (`free -m`, `vmstat`).
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+**Cause:** Insufficient RAM, memory leaks, aggressive swapping.
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Fix:**
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+* Tune swappiness (`vm.swappiness=10` in `/etc/sysctl.conf`).
+* Identify memory-hogging processes with `ps aux --sort=-%mem`.
+* Add more memory or optimize application usage.
 
+---
 
-## Stale NFS Mounts
+## 3. Zombie Processes
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+**Symptoms:** Defunct processes seen in `ps -ef` or `top`.
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Cause:** Child processes not reaped by the parent.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Fix:**
 
+* Restart the parent process.
+* Monitor with `top -b -n1 | grep Z`.
 
-## Disk Space Exhaustion
+---
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 4. Stale NFS Mounts
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:** `ls`, `df`, or `du` hang on NFS paths.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:** NFS server unresponsive or unreachable.
 
+**Fix:**
 
-## Incorrect File Permissions
+* Use `umount -l /mountpoint` to force lazy unmount.
+* Automate with `autofs` to avoid permanent hangs.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+---
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+## 5. Disk Space Exhaustion
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Symptoms:** Errors writing to disk, apps crashing, `df -h` near 100%.
 
+**Cause:** Log bloat, temporary file growth, orphaned files.
 
-## Full /tmp or /var Directories
+**Fix:**
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+* Use `du -sh *` and `ncdu` to identify large directories.
+* Clean logs, use `logrotate`, delete old files.
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+---
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+## 6. Incorrect File Permissions
 
+**Symptoms:** Access denied errors, applications not launching.
 
-## Slow Boot Due to Failed Services
+**Cause:** Files owned by wrong user/group, wrong mode bits.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+**Fix:**
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+* Use `ls -l` and `chmod/chown` to correct.
+* Apply ACLs with `setfacl` if needed.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+---
 
+## 7. Full /tmp or /var Directories
 
-## Outdated Packages
+**Symptoms:** Services fail to start or crash unexpectedly.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+**Cause:** Applications dumping temp files or logs unmonitored.
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Fix:**
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+* Clean with `tmpwatch` or `tmpreaper`.
+* Schedule cron jobs to rotate.
 
+---
 
-## Time Sync Issues (NTP)
+## 8. Slow Boot Due to Failed Services
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+**Symptoms:** Long startup time, timeouts during `systemd` boot.
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Cause:** Broken services in boot chain.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Fix:**
 
+* `systemd-analyze blame`
+* Disable failed services: `systemctl disable <service>`
 
-## Misconfigured Ulimits
+---
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 9. Outdated Packages
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:** Security alerts, feature incompatibility.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:** Lack of regular `apt/yum` upgrades.
 
+**Fix:**
 
-## High I/O Wait Times
+* Run `apt update && apt upgrade` or `yum update`.
+* Automate with unattended-upgrades.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+---
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+## 10. Time Sync Issues (NTP)
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Symptoms:** Incorrect timestamps, app failures, auth issues.
 
+**Cause:** NTP service stopped or misconfigured.
 
-## Network Interface Flapping
+**Fix:**
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+* Restart `systemd-timesyncd` or `chronyd`.
+* Use `ntpq -p` or `timedatectl status` to verify.
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+---
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+## 11. Misconfigured Ulimits
 
+**Symptoms:** Too many open files, process launch failure.
 
-## Syslog Flooding
+**Cause:** Default OS limits not increased.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+**Fix:**
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+* Set in `/etc/security/limits.conf` and `pam.d`.
+* `ulimit -n 65535`
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+---
 
+## 12. High I/O Wait Times
 
-## Corrupted Filesystems
+**Symptoms:** System idle but sluggish; high `%wa` in `top`.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+**Cause:** Disk contention, backups, database flushes.
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Fix:**
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+* Use `iotop`, `iostat`, or `dstat`.
+* Move to faster disks or spread I/O.
 
+---
 
-## Untracked Cron Jobs
+## 13. Network Interface Flapping
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+**Symptoms:** Interfaces going up/down repeatedly.
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Cause:** Faulty NIC, loose cables, DHCP renewal issues.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Fix:**
 
+* `dmesg`, `journalctl -u NetworkManager`
+* Replace cable, set static IP.
 
-## SELinux Denials
+---
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 14. Syslog Flooding
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:** Large logs, performance degradation.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:** Verbose services or misconfigurations.
 
+**Fix:**
 
-## SSH Authentication Failures
+* Tune log levels in `/etc/rsyslog.conf`.
+* Use `logrotate` and disk quotas.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+---
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+## 15. Corrupted Filesystems
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Symptoms:** Read-only mounts, `fsck` prompts.
 
+**Cause:** Unclean shutdowns, hardware errors.
 
-## Hanging User Sessions
+**Fix:**
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+* Run `fsck -y` in maintenance mode.
+* Replace failing disk.
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+---
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+## 16. Untracked Cron Jobs
 
+**Symptoms:** Unexpected scripts running.
 
-## Kernel Panics or OOM Kill
+**Cause:** User or system-wide cron jobs left undocumented.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+**Fix:**
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+* `crontab -l`, check `/etc/cron*`, audit job output.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+---
+
+## 17. SELinux Denials
+
+**Symptoms:** `Permission denied` even with correct ACLs.
+
+**Cause:** SELinux blocking action.
+
+**Fix:**
+
+* Use `sealert` or audit logs.
+* Set proper context via `restorecon`.
+
+---
+
+## 18. SSH Authentication Failures
+
+**Symptoms:** Users can't log in, `Permission denied (publickey)`.
+
+**Cause:** Wrong key permissions or agent setup.
+
+**Fix:**
+
+* Ensure `~/.ssh/authorized_keys` exists.
+* Correct file modes with `chmod 600 ~/.ssh/*`.
+
+---
+
+## 19. Hanging User Sessions
+
+**Symptoms:** SSH sessions freeze, unresponsive terminals.
+
+**Cause:** Hung shell processes, background jobs.
+
+**Fix:**
+
+* Kill stale TTYs: `pkill -t pts/X`
+* Monitor `who -a`, `w`, `uptime`
+
+---
+
+## 20. Kernel Panics or OOM Kill
+
+**Symptoms:** Sudden server reboots, memory dump logs.
+
+**Cause:** Memory exhaustion or fatal kernel bugs.
+
+**Fix:**
+
+* Review `dmesg`, `/var/log/messages`, or crash dump.
+* Install kdump; increase swap or RAM.
 

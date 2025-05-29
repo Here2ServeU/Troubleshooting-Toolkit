@@ -3,323 +3,284 @@
 ### Helpful Docs: [Kubernetes Docs](https://kubernetes.io/docs/)
 
 ## Table of Contents
-- [1. CrashLoopBackOff Errors](#crashloopbackoff-errors)
-- [2. ImagePullBackOff](#imagepullbackoff)
-- [3. PodEviction due to Resource Pressure](#podeviction-due-to-resource-pressure)
-- [4. Unbound PersistentVolumeClaims](#unbound-persistentvolumeclaims)
-- [5. Incorrect Liveness/Readiness Probes](#incorrect-liveness/readiness-probes)
-- [6. Inconsistent Replica Counts](#inconsistent-replica-counts)
-- [7. Improper RBAC Configurations](#improper-rbac-configurations)
-- [8. Missing Resource Limits](#missing-resource-limits)
-- [9. Failed StatefulSet Scaling](#failed-statefulset-scaling)
-- [10. No PodDisruptionBudgets](#no-poddisruptionbudgets)
-- [11. DNS Resolution Failures in Cluster](#dns-resolution-failures-in-cluster)
-- [12. Kubelet Disk Pressure Warnings](#kubelet-disk-pressure-warnings)
-- [13. Too Many Open Connections in Services](#too-many-open-connections-in-services)
-- [14. Node NotReady Issues](#node-notready-issues)
-- [15. Missing or Misconfigured Network Policies](#missing-or-misconfigured-network-policies)
-- [16. Secrets Mounted as Plaintext](#secrets-mounted-as-plaintext)
-- [17. Broken HPA Configs](#broken-hpa-configs)
-- [18. No Network Segmentation](#no-network-segmentation)
-- [19. Horizontal Pod Autoscaler Not Triggering](#horizontal-pod-autoscaler-not-triggering)
-- [20. Node Pool Fragmentation](#node-pool-fragmentation)
 
-## CrashLoopBackOff Errors
+* [1. CrashLoopBackOff Errors](#crashloopbackoff-errors)
+* [2. ImagePullBackOff](#imagepullbackoff)
+* [3. PodEviction due to Resource Pressure](#podeviction-due-to-resource-pressure)
+* [4. Unbound PersistentVolumeClaims](#unbound-persistentvolumeclaims)
+* [5. Incorrect Liveness/Readiness Probes](#incorrect-livenessreadiness-probes)
+* [6. Inconsistent Replica Counts](#inconsistent-replica-counts)
+* [7. Improper RBAC Configurations](#improper-rbac-configurations)
+* [8. Missing Resource Limits](#missing-resource-limits)
+* [9. Failed StatefulSet Scaling](#failed-statefulset-scaling)
+* [10. No PodDisruptionBudgets](#no-poddisruptionbudgets)
+* [11. DNS Resolution Failures in Cluster](#dns-resolution-failures-in-cluster)
+* [12. Kubelet Disk Pressure Warnings](#kubelet-disk-pressure-warnings)
+* [13. Too Many Open Connections in Services](#too-many-open-connections-in-services)
+* [14. Node NotReady Issues](#node-notready-issues)
+* [15. Missing or Misconfigured Network Policies](#missing-or-misconfigured-network-policies)
+* [16. Secrets Mounted as Plaintext](#secrets-mounted-as-plaintext)
+* [17. Broken HPA Configs](#broken-hpa-configs)
+* [18. No Network Segmentation](#no-network-segmentation)
+* [19. Horizontal Pod Autoscaler Not Triggering](#horizontal-pod-autoscaler-not-triggering)
+* [20. Node Pool Fragmentation](#node-pool-fragmentation)
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 1. CrashLoopBackOff Errors
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+Pods continuously crash and restart, with status `CrashLoopBackOff`.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+Failed initialization, bad environment config, or exceptions in application startup.
 
+**Fix:**
 
-## ImagePullBackOff
+* Inspect logs via `kubectl logs <pod-name>`.
+* Review init containers and startup scripts.
+* Ensure proper environment configuration.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 2. ImagePullBackOff
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+Pod fails to start; image cannot be pulled.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+Incorrect image name, tag, or unauthenticated private registry.
 
+**Fix:**
 
-## PodEviction due to Resource Pressure
+* Validate image path and credentials.
+* Use imagePullSecrets for private repos.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 3. PodEviction due to Resource Pressure
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+Pods evicted automatically by the scheduler.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+Node CPU/memory/disk exceeds thresholds.
 
+**Fix:**
 
-## Unbound PersistentVolumeClaims
+* Monitor node usage with `kubectl describe node`.
+* Allocate resource limits; use taints/tolerations effectively.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 4. Unbound PersistentVolumeClaims
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+Pods hang with `Pending` PVCs.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+No matching PersistentVolume.
 
+**Fix:**
 
-## Incorrect Liveness/Readiness Probes
+* Check PVC and PV specs.
+* Enable dynamic provisioning if using a StorageClass.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 5. Incorrect Liveness/Readiness Probes
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+Healthy pods marked as failed and restarted.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+Incorrect probe path, port, or thresholds.
 
+**Fix:**
 
-## Inconsistent Replica Counts
+* Validate probe configuration.
+* Use `curl` or `wget` inside the pod to test endpoints.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 6. Inconsistent Replica Counts
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+Scaling doesn't match desired state.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+Manual pod deletions or failed autoscaler config.
 
+**Fix:**
 
-## Improper RBAC Configurations
+* Set correct `replicas` in deployment.
+* Review HPA or custom autoscaler setup.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 7. Improper RBAC Configurations
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+Service accounts lack permissions; errors like `forbidden`.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+Incorrect `RoleBinding` or `ClusterRoleBinding`.
 
+**Fix:**
 
-## Missing Resource Limits
+* Use `kubectl auth can-i` to verify access.
+* Update RBAC rules with least privilege.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 8. Missing Resource Limits
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+Pods consume excessive resources.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+No `resources.limits` or `requests` defined.
 
+**Fix:**
 
-## Failed StatefulSet Scaling
+* Define CPU/memory limits.
+* Use LimitRange policies.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 9. Failed StatefulSet Scaling
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+New pods not scheduled or remain in pending.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+Missing storage resources or node constraints.
 
+**Fix:**
 
-## No PodDisruptionBudgets
+* Confirm PVC templates.
+* Review affinity rules.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 10. No PodDisruptionBudgets
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+Disruptions during voluntary maintenance.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+No PDB defined for HA-critical apps.
 
+**Fix:**
 
-## DNS Resolution Failures in Cluster
+* Add PDB to ensure minimal replicas stay available.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 11. DNS Resolution Failures in Cluster
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+Pods can't resolve service names.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+CoreDNS down or misconfigured.
 
+**Fix:**
 
-## Kubelet Disk Pressure Warnings
+* Check CoreDNS pod logs.
+* Verify kube-dns ConfigMap.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 12. Kubelet Disk Pressure Warnings
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+Node enters `NotReady` state.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+Disk space or inodes exhausted.
 
+**Fix:**
 
-## Too Many Open Connections in Services
+* Clean up unused images or logs.
+* Allocate larger disks or separate volumes.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 13. Too Many Open Connections in Services
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+Connection limits hit, users experience failures.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+Poor load balancing or backend saturation.
 
+**Fix:**
 
-## Node NotReady Issues
+* Configure maxConnections.
+* Use connection pools or rate limiting.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 14. Node NotReady Issues
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+Nodes become `NotReady` in cluster.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+Kubelet issues, networking, or disk pressure.
 
+**Fix:**
 
-## Missing or Misconfigured Network Policies
+* Inspect kubelet logs.
+* Restart node or drain and replace.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 15. Missing or Misconfigured Network Policies
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+Unexpected traffic access or failures.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+No policies enforcing east-west isolation.
 
+**Fix:**
 
-## Secrets Mounted as Plaintext
+* Define ingress/egress policies.
+* Test using network policy simulators.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 16. Secrets Mounted as Plaintext
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+Secrets exposed in container filesystems.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+Mounted as volumes or env vars.
 
+**Fix:**
 
-## Broken HPA Configs
+* Use external secrets manager.
+* Limit access via RBAC.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 17. Broken HPA Configs
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+No scaling despite CPU/memory thresholds exceeded.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+HPA metrics misconfigured or missing.
 
+**Fix:**
 
-## No Network Segmentation
+* Ensure `metrics-server` is running.
+* Validate resource requests on deployment.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 18. No Network Segmentation
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+Flat network; noisy neighbor interference.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+No isolation for workloads.
 
+**Fix:**
 
-## Horizontal Pod Autoscaler Not Triggering
+* Use namespaces and network policies.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 19. Horizontal Pod Autoscaler Not Triggering
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+Desired scale not reached under load.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+Invalid metrics or missing requests.
 
+**Fix:**
 
-## Node Pool Fragmentation
+* Configure correct HPA metric sources.
+* Apply `resources.requests` to enable scaling.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 20. Node Pool Fragmentation
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+Suboptimal pod scheduling.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+Overprovisioned nodes with poor utilization.
+
+**Fix:**
+
+* Enable binpacking via scheduling policies.
+* Consolidate node pools where possible.
 

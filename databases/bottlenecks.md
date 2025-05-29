@@ -3,323 +3,295 @@
 ### Helpful Docs: [PostgreSQL](https://www.postgresql.org/docs/) | [MySQL](https://dev.mysql.com/doc/)
 
 ## Table of Contents
-- [1. Unoptimized Queries](#unoptimized-queries)
-- [2. Missing Indexes](#missing-indexes)
-- [3. Slow Connection Pooling](#slow-connection-pooling)
-- [4. Inefficient Joins](#inefficient-joins)
-- [5. Long-running Transactions](#long-running-transactions)
-- [6. Blocking Locks](#blocking-locks)
-- [7. High IOPS Due to Large Table Scans](#high-iops-due-to-large-table-scans)
-- [8. Improper Backup Strategies](#improper-backup-strategies)
-- [9. Non-standard Schema Evolution](#non-standard-schema-evolution)
-- [10. Database Connection Saturation](#database-connection-saturation)
-- [11. Replication Lag](#replication-lag)
-- [12. High Latency in Read Replicas](#high-latency-in-read-replicas)
-- [13. Disk Space Exhaustion](#disk-space-exhaustion)
-- [14. Uncontrolled Autovacuum (Postgres)](#uncontrolled-autovacuum-(postgres))
-- [15. Improper Caching Strategy](#improper-caching-strategy)
-- [16. Mismatched Charset or Collation](#mismatched-charset-or-collation)
-- [17. Failing Deadlock Detection](#failing-deadlock-detection)
-- [18. Poor Partitioning Strategy](#poor-partitioning-strategy)
-- [19. Excessive Temporary Tables](#excessive-temporary-tables)
-- [20. No Query Timeouts Configured](#no-query-timeouts-configured)
 
-## Unoptimized Queries
+* [1. Unoptimized Queries](#1-unoptimized-queries)
+* [2. Missing Indexes](#2-missing-indexes)
+* [3. Slow Connection Pooling](#3-slow-connection-pooling)
+* [4. Inefficient Joins](#4-inefficient-joins)
+* [5. Long-running Transactions](#5-long-running-transactions)
+* [6. Blocking Locks](#6-blocking-locks)
+* [7. High IOPS Due to Large Table Scans](#7-high-iops-due-to-large-table-scans)
+* [8. Improper Backup Strategies](#8-improper-backup-strategies)
+* [9. Non-standard Schema Evolution](#9-non-standard-schema-evolution)
+* [10. Database Connection Saturation](#10-database-connection-saturation)
+* [11. Replication Lag](#11-replication-lag)
+* [12. High Latency in Read Replicas](#12-high-latency-in-read-replicas)
+* [13. Disk Space Exhaustion](#13-disk-space-exhaustion)
+* [14. Uncontrolled Autovacuum (Postgres)](#14-uncontrolled-autovacuum-postgres)
+* [15. Improper Caching Strategy](#15-improper-caching-strategy)
+* [16. Mismatched Charset or Collation](#16-mismatched-charset-or-collation)
+* [17. Failing Deadlock Detection](#17-failing-deadlock-detection)
+* [18. Poor Partitioning Strategy](#18-poor-partitioning-strategy)
+* [19. Excessive Temporary Tables](#19-excessive-temporary-tables)
+* [20. No Query Timeouts Configured](#20-no-query-timeouts-configured)
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 1. Unoptimized Queries
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+Queries take longer than expected, cause CPU spikes, or slow down overall application performance.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+Poor query structure, missing WHERE clauses, inefficient operations (e.g., subqueries or Cartesian joins).
 
+**Fix:**
 
-## Missing Indexes
+* Use `EXPLAIN` to analyze queries.
+* Refactor SQL to minimize full table scans.
+* Use proper indexes.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 2. Missing Indexes
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+Frequent slow queries or full table scans.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+High volume read operations without supporting indexes.
 
+**Fix:**
 
-## Slow Connection Pooling
+* Identify slow queries via slow log or pg\_stat\_statements.
+* Add indexes to columns used in WHERE, JOIN, and ORDER BY.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 3. Slow Connection Pooling
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+Delayed response time during peak loads.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+Improper connection pool size or misconfigured pool settings.
 
+**Fix:**
 
-## Inefficient Joins
+* Use connection poolers like PgBouncer or ProxySQL.
+* Tune max connections and pool sizes.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 4. Inefficient Joins
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+Queries with JOINs are slow, especially with large datasets.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+Joining on unindexed columns or large datasets.
 
+**Fix:**
 
-## Long-running Transactions
+* Index JOIN keys.
+* Minimize number of JOINs in critical paths.
+* Normalize vs. denormalize based on usage.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 5. Long-running Transactions
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+Table locks, increased replication lag, or stalled autovacuum.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+Transactions that remain open for long durations.
 
+**Fix:**
 
-## Blocking Locks
+* Close transactions promptly.
+* Use timeouts for long queries.
+* Audit application logic.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 6. Blocking Locks
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+Other queries are stuck or timing out.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+Locks not being released or deadlock situations.
 
+**Fix:**
 
-## High IOPS Due to Large Table Scans
+* Use `pg_stat_activity` to find blocked queries.
+* Kill blocking queries.
+* Refactor logic to avoid lock contention.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 7. High IOPS Due to Large Table Scans
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+Storage performance degradation, increased latency.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+Frequent full-table scans without WHERE clauses or indexes.
 
+**Fix:**
 
-## Improper Backup Strategies
+* Add indexes.
+* Use query caching layers.
+* Partition large tables.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 8. Improper Backup Strategies
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+No recovery points or excessive recovery time.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+Lack of regular backups or poor RTO/RPO design.
 
+**Fix:**
 
-## Non-standard Schema Evolution
+* Automate backups (logical or physical).
+* Test recovery procedures.
+* Schedule off-peak backup windows.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 9. Non-standard Schema Evolution
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+Schema drift across environments or unexpected errors after deployment.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+Manual schema changes, lack of migrations.
 
+**Fix:**
 
-## Database Connection Saturation
+* Use tools like Liquibase, Flyway, or Alembic.
+* Adopt version-controlled migrations.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 10. Database Connection Saturation
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+App errors like “too many connections.”
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+Max connections exceeded or improper connection closing.
 
+**Fix:**
 
-## Replication Lag
+* Use pooling.
+* Monitor and close unused connections.
+* Increase connection limits if needed.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 11. Replication Lag
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+Stale reads from replicas.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+Network delays, slow disk I/O, or long-running queries.
 
+**Fix:**
 
-## High Latency in Read Replicas
+* Monitor lag with `pg_stat_replication`.
+* Offload writes from replicas.
+* Use faster disk or reduce query load.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 12. High Latency in Read Replicas
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+Slow read performance on replicas.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+Insufficient resources or slow replication apply rate.
 
+**Fix:**
 
-## Disk Space Exhaustion
+* Scale read replicas vertically.
+* Use connection poolers to distribute read load.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 13. Disk Space Exhaustion
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+Database crashes or write failures.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+Unmanaged WAL files, logs, or large tables.
 
+**Fix:**
 
-## Uncontrolled Autovacuum (Postgres)
+* Rotate logs.
+* Clean up old data.
+* Monitor space with alerts.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 14. Uncontrolled Autovacuum (Postgres)
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+Table bloat or long-running autovacuum jobs.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+Autovacuum settings too aggressive or too lenient.
 
+**Fix:**
 
-## Improper Caching Strategy
+* Tune autovacuum thresholds.
+* Monitor with `pg_stat_user_tables`.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 15. Improper Caching Strategy
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+High DB load despite repeated queries.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+No or ineffective caching layer.
 
+**Fix:**
 
-## Mismatched Charset or Collation
+* Use Redis or Memcached.
+* Cache read-heavy queries.
+* Invalidate cache correctly.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 16. Mismatched Charset or Collation
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+Data inconsistencies or failed joins.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+Different charsets across DB or between app and DB.
 
+**Fix:**
 
-## Failing Deadlock Detection
+* Align charset/collation across DB and clients.
+* Use `pg_collation` to inspect.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 17. Failing Deadlock Detection
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+Queries stuck or failing silently.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+Long-held locks or circular locks.
 
+**Fix:**
 
-## Poor Partitioning Strategy
+* Monitor with `pg_locks`.
+* Refactor locking logic.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 18. Poor Partitioning Strategy
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+Poor query performance on large tables.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+Lack of or suboptimal partitioning.
 
+**Fix:**
 
-## Excessive Temporary Tables
+* Use range or hash partitioning.
+* Match partitions to query patterns.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 19. Excessive Temporary Tables
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+High memory usage or temp file warnings.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+Overuse of temp tables or subqueries.
 
+**Fix:**
 
-## No Query Timeouts Configured
+* Refactor queries.
+* Avoid large sorts or joins on temp data.
 
-**Symptoms:**  
-This issue typically presents as unexpected behavior such as performance degradation, service interruptions, security warnings, or failure to deploy or scale.
+## 20. No Query Timeouts Configured
 
-**Cause:**  
-Common causes include misconfigurations, resource mismanagement, version incompatibilities, lack of monitoring, or poor architectural decisions.
+**Symptoms:**
+Hung queries, app timeouts.
 
-**Fix:**  
-- Analyze logs or metrics related to this issue using recommended tools.
-- Refer to the official documentation or guidelines.
-- Implement configuration changes or best practices as needed.
-- Automate detection and remediation if possible.
+**Cause:**
+No limits on query execution time.
+
+**Fix:**
+
+* Use `statement_timeout` (Postgres) or similar.
+* Add query watchdogs at the app level.
 
