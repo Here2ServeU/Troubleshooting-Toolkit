@@ -6,16 +6,26 @@ A curated, category-based collection of the **most common bottlenecks** DevOps t
 
 ## What You'll Find Inside
 
-Each directory focuses on a different domain of modern DevOps:
+## Folder Overview
 
-- **Cloud** — AWS, GCP, Azure-related failures and misconfigurations  
-- **Containers** — Docker and OCI runtime issues  
-- **Databases** — PostgreSQL, MySQL, and other DB bottlenecks  
-- **Kubernetes** — Troubleshooting pods, nodes, and clusters  
-- **Terraform** — State issues, provider problems, and Infrastructure as Code best practices  
-- **Linux** — System-level diagnostics for on-prem or cloud VMs  
-- **Observability** — Monitoring, metrics, logs, and alerting errors  
-- **Scripts** — Automation scripts to quickly resolve or detect problems
+Each folder contains:
+
+- **15–20 of the most common bottlenecks** in that category  
+- **Root cause explanations** for each issue  
+- **Tools and commands** to help you diagnose and resolve problems  
+- **Sample scripts** for automation or manual remediation steps  
+
+| Folder         | Description                                                  |
+|----------------|--------------------------------------------------------------|
+| [`cloud/`](cloud/bottlenecks.md)       | Troubleshooting issues in AWS, GCP, Azure, and hybrid cloud setups |
+| [`containers/`](containers/bottlenecks.md)  | Bottlenecks in Docker, Podman, and containerized apps        |
+| [`databases/`](databases/bottlenecks.md)   | Common performance and config problems in SQL/NoSQL systems  |
+| [`kubernetes/`](kubernetes/bottlenecks.md)  | Issues with pods, services, RBAC, and resource limits        |
+| [`terraform/`](terraform/bottlenecks.md)   | State conflicts, drift, and provider-level deployment issues |
+| [`linux/`](linux/bottlenecks.md)       | OS-level problems like permissions, disk I/O, and processes  |
+| [`observability/`](observability/bottlenecks.md) | Gaps in monitoring, metrics, logs, alerts, and dashboards  |
+| `scripts/`     | Automation utilities to fix or detect known bottlenecks      |
+| `assets/`      | Diagrams, screenshots, or media supporting toolkit content   |
 
 ---
 
