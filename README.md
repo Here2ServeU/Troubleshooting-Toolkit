@@ -6,7 +6,11 @@ A curated, category-based collection of the **most common bottlenecks** DevOps t
 
 ## Watch the Demo
 
+<div align="center">
+
 [![DevOps Troubleshooting Toolkit - Overview](https://img.youtube.com/vi/tF0wPL5NTnw/0.jpg)](https://www.youtube.com/watch?v=tF0wPL5NTnw)
+
+</div>
 
 ---
 
