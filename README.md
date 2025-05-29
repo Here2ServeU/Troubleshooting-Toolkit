@@ -24,7 +24,7 @@ Each folder contains:
 | [`terraform/`](terraform/bottlenecks.md)   | State conflicts, drift, and provider-level deployment issues |
 | [`linux/`](linux/bottlenecks.md)       | OS-level problems like permissions, disk I/O, and processes  |
 | [`observability/`](observability/bottlenecks.md) | Gaps in monitoring, metrics, logs, alerts, and dashboards  |
-| `scripts/`     | Automation utilities to fix or detect known bottlenecks      |
+| [`scripts/`](scripts/scripts.md)     | Automation utilities to fix or detect known bottlenecks      |
 | `assets/`      | Diagrams, screenshots, or media supporting toolkit content   |
 
 ---
